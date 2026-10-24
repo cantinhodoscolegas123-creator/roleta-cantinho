@@ -1,0 +1,59 @@
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roleta do Cantinho</title>
+
+<style>
+:root{--bg:#0b2a4a;--fg:#ffffff;--gold:#f5b301;--gold-fg:#2a1c00;--red:#d9534f;--panel:#12395f;--line:#2b5b8a;--muted:#b9d0e6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:Arial,Helvetica,sans-serif;font-size:16px;text-align:center;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:4px 0 2px;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 8px}
+canvas{width:100%;max-width:520px;height:auto;display:block;margin:0 auto}
+#r{font-size:28px;font-weight:bold;color:var(--gold);min-height:40px;margin:8px 0;overflow-wrap:anywhere}
+button{font-size:22px;font-weight:bold;padding:14px 26px;margin:6px;border:0;border-radius:12px;cursor:pointer}
+button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+#g{background:var(--gold);color:var(--gold-fg)}
+#n{background:var(--red);color:var(--fg)}
+#c{color:var(--muted);min-height:22px}
+details{max-width:520px;margin:16px auto 0;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+summary{cursor:pointer;font-weight:bold}
+textarea{width:100%;box-sizing:border-box;min-height:200px;margin-top:8px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:15px}
+#ap{background:var(--fg);color:var(--bg);font-size:16px;padding:10px 18px}
+#t{color:var(--muted);margin:6px 0 0}
+</style>
+<h1>Sorteio Cantinho dos Colegas</h1>
+<p class="sub">Porção à escolha · show de sábado, 24/10</p>
+<canvas id="cv" width="760" height="760"></canvas>
+<div id="r" aria-live="polite"></div>
+<button id="g">GIRAR</button>
+<button id="n" hidden>Não está no show, girar de novo</button>
+<div id="c"></div>
+<details>
+<summary>Lista de nomes (<span id="q"></span>)</summary>
+<p id="t">Um nome por linha. Depois de editar, toque em Aplicar.</p>
+<textarea id="lista" spellcheck="false"></textarea>
+<button id="ap">Aplicar lista</button>
+</details>
+<script>
+const PADRAO="marcelogonsalves.corretor giovanakurunci g_nardes_ natcbert tatacardoso013 janaina_andrade_abrahao flaviaa.dantass steffanycpsantos fabinho_roots_percussao alesktd30 miguel_underlini286 tattioli sueli.gomespereira.98 tathymend guilechristovam luiz_flavyo camila82305 raroprazeroficial flaviaalvesdos70 luciene1704 stelladevisate magalvao87 juniorvalderano vi.vian1260 96_jecosta cesaraveli taylla.ayala_23 vanderleispigariolmendes thiagomachadomarques lettieri.luana pamellasauer claudiafagundes98 agata_marisol elcio.pbrito _viitorinhasilva natianeneves bellaxavier13 sants_j.c williansilva1993 gabytadoida renatoperrone140 berbelacris paulap3reira monikiita_83 nogueiraanisia thiagusmao _.almeidacomarin._ mailza_cruz rogeriopastrelli pedro_ferreiras1104 denyferribeiro dyadya501 regianedeazevedorocha liranane celuxo_".split(" ");
+let nomes=PADRAO.slice();
+const cv=document.getElementById("cv"),x=cv.getContext("2d"),R=360,C=380;let ang=0,gira=false,sel=-1;
+const $=id=>document.getElementById(id);
+const cor=i=>`hsl(${(i*360/nomes.length)|0},70%,38%)`;
+function rnd(){const a=new Uint32Array(2);crypto.getRandomValues(a);return(a[0]*4294967296+a[1])/18446744073709551616}
+function mostra(){$("lista").value=nomes.join("\n");$("q").textContent=nomes.length+" pessoas"}
+function desenha(){x.clearRect(0,0,760,760);const n=nomes.length;if(!n)return;const s=2*Math.PI/n;
+for(let i=0;i<n;i++){x.beginPath();x.moveTo(C,C);x.arc(C,C,R,ang+i*s,ang+(i+1)*s);x.fillStyle=cor(i);x.fill();x.strokeStyle="#ffffff";x.lineWidth=2;x.stroke();
+x.save();x.translate(C,C);x.rotate(ang+(i+.5)*s);x.textAlign="right";x.fillStyle="#ffffff";x.font="bold "+(n>20?16:20)+"px Arial";x.fillText(nomes[i],R-16,6);x.restore()}
+x.beginPath();x.arc(C,C,34,0,7);x.fillStyle="#ffffff";x.fill();
+x.beginPath();x.moveTo(C+R+6,C);x.lineTo(C+R-44,C-22);x.lineTo(C+R-44,C+22);x.fillStyle="#f5b301";x.fill()}
+function gira1(){if(gira||!nomes.length)return;gira=true;$("r").textContent="";$("n").hidden=true;$("c").textContent="";
+const n=nomes.length,s=2*Math.PI/n,alvo=Math.floor(rnd()*n);
+let fim=-(alvo+.5)*s-Math.PI*2*(6+Math.floor(rnd()*3));
+const ini=ang,t0=performance.now(),D=7000;
+(function f(t){const p=Math.min(1,(t-t0)/D),e=1-Math.pow(1-p,4);ang=ini+(fim-ini)*e;desenha();
+if(p<1)requestAnimationFrame(f);else{gira=false;sel=alvo;$("r").textContent="Sorteado: @"+nomes[alvo];$("n").hidden=false;$("c").textContent="Confira se está no show. Se não estiver, toque no botão vermelho."}})(t0)}
+$("g").onclick=gira1;
+$("n").onclick=()=>{nomes.splice(sel,1);sel=-1;ang=ang%(2*Math.PI);mostra();desenha();gira1()};
+$("ap").onclick=()=>{const l=$("lista").value.split("\n").map(v=>v.trim().replace(/^@/,"")).filter(Boolean);if(l.length){nomes=l;ang=0;$("r").textContent="";$("n").hidden=true;mostra();desenha()}};
+mostra();desenha();
+</script>
+</head></html>
