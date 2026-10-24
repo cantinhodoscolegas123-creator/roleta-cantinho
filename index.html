@@ -42,7 +42,7 @@ function rnd(){const a=new Uint32Array(2);crypto.getRandomValues(a);return(a[0]*
 function mostra(){$("lista").value=nomes.join("\n");$("q").textContent=nomes.length+" pessoas"}
 function desenha(){x.clearRect(0,0,760,760);const n=nomes.length;if(!n)return;const s=2*Math.PI/n;
 for(let i=0;i<n;i++){x.beginPath();x.moveTo(C,C);x.arc(C,C,R,ang+i*s,ang+(i+1)*s);x.fillStyle=cor(i);x.fill();x.strokeStyle="#ffffff";x.lineWidth=2;x.stroke();
-x.save();x.translate(C,C);x.rotate(ang+(i+.5)*s);x.textAlign="right";x.fillStyle="#ffffff";x.font="bold "+(n>20?16:20)+"px Arial";x.fillText(nomes[i],R-16,6);x.restore()}
+x.save();x.translate(C,C);x.rotate(ang+(i+.5)*s);x.textAlign="right";x.fillStyle="#ffffff";x.font="bold "+(n>20?16:20)+"px Arial";x.fillText(nomes[i],R-62,6);x.restore()}
 x.beginPath();x.arc(C,C,34,0,7);x.fillStyle="#ffffff";x.fill();
 x.beginPath();x.moveTo(C+R+6,C);x.lineTo(C+R-44,C-22);x.lineTo(C+R-44,C+22);x.fillStyle="#f5b301";x.fill()}
 function gira1(){if(gira||!nomes.length)return;gira=true;$("r").textContent="";$("n").hidden=true;$("c").textContent="";
